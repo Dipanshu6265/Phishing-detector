@@ -1,4 +1,6 @@
-# 🛡️ Phishing URL Detection API
+
+
+## 🛡️ Phishing URL Detection API
 
 An **AI-powered phishing detection system** that identifies whether a URL is malicious or legitimate using machine learning. The system is built with **Python**, powered by a **Random Forest model**, and exposed via a **REST API using Flask**. It is fully **Dockerized** and deployed on **Render Cloud** for real-time public access.
 
@@ -185,8 +187,7 @@ curl -X POST http://localhost:5000/predict \
 **Dipanshu**
 
 * GitHub: [@Dipanshu6265](https://github.com/Dipanshu6265)
-* LinkedIn: *(Add your link here)*
-
+* LinkedIn: *[(https://www.linkedin.com/feed/?nis=true&lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3BXL3eNWLKSkeFA1%2BwCgjYHw%3D%3D)]*
 ---
 
 ## 📄 License
