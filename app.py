@@ -1,34 +1,31 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
 import joblib
 
 app = Flask(__name__)
 
-# Load trained model
+# Load model
 model = joblib.load("phishing_model.pkl")
 
-@app.route('/')
+# Health check
+@app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Phishing URL Detection API is running ✅"})
 
-@app.route('/predict', methods=['POST'])
+# ✅ THIS IS WHAT MUST EXIST:
+@app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
-    url = data.get("url")
+    url = data["url"]
 
-    if not url:
-        return jsonify({"error": "URL is required"}), 400
-
-    # Sample feature extraction (simplified)
+    # Example dummy features
     features = [
-        len(url),
-        url.count('.'),
-        url.count('@'),
-        url.count('-'),
-        url.count('//'),
-        int('https' in url),
-        int('login' in url.lower())
+        len(url),                     # URL length
+        url.count("."),              # Dots in URL
+        url.count("@"),              # @ symbol
+        "https" in url,              # HTTPS used
+        "login" in url               # Keyword check
     ]
-
+    # Predict
     prediction = model.predict([features])[0]
 
     return jsonify({
@@ -36,5 +33,5 @@ def predict():
         "result": "Phishing" if prediction == 1 else "Legitimate"
     })
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
