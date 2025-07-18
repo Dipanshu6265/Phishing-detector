@@ -1,37 +1,39 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, request, jsonify, render_template
 import joblib
-import numpy as np
-from feature_extractor import extract_features
 
 app = Flask(__name__)
-CORS(app)
 
-model = joblib.load('phishing_model.pkl')
+# Load trained model
+model = joblib.load("phishing_model.pkl")
 
 @app.route('/')
-def index():
-    return jsonify({'message': 'Phishing URL Detection API is running ✅'})
+def home():
+    return jsonify({"message": "Phishing URL Detection API is running ✅"})
 
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    if 'url' not in data:
-        return jsonify({'error': 'Missing "url" in request'}), 400
+    url = data.get("url")
 
-    url = data['url']
-    features = extract_features(url)
+    if not url:
+        return jsonify({"error": "URL is required"}), 400
+
+    # Sample feature extraction (simplified)
+    features = [
+        len(url),
+        url.count('.'),
+        url.count('@'),
+        url.count('-'),
+        url.count('//'),
+        int('https' in url),
+        int('login' in url.lower())
+    ]
+
     prediction = model.predict([features])[0]
 
-    # 🎯 New: Add confidence score from predict_proba
-    proba = model.predict_proba([features])[0]
-    confidence = round(max(proba) * 100, 2)
-
-    result = 'Phishing' if prediction == 1 else 'Legitimate'
     return jsonify({
-        'url': url,
-        'result': result,
-        'confidence': f"{confidence}%"
+        "url": url,
+        "result": "Phishing" if prediction == 1 else "Legitimate"
     })
 
 if __name__ == '__main__':
