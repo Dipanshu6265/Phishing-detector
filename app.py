@@ -3,37 +3,36 @@ import joblib
 
 app = Flask(__name__)
 
-# Load the trained model
-model = joblib.load('phishing_model.pkl')
+# Load model
+model = joblib.load("phishing_model.pkl")
 
-@app.route('/')
-def index():
+# Health check
+@app.route("/", methods=["GET"])
+def home():
     return jsonify({"message": "Phishing URL Detection API is running ✅"})
 
-@app.route('/predict', methods=['POST'])
+# ✅ Prediction endpoint
+@app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
+    url = data.get("url", "")
 
-    url = data.get("url")
-    if not url:
-        return jsonify({"error": "Missing URL"}), 400
-
-    # Example feature extraction
+    # Feature extraction
     features = [
         len(url),
-        url.count('.'),
-        url.count('@'),
-        url.count('-'),
-        url.count('//'),
-        int('https' in url),
-        int('login' in url.lower())
+        url.count("."),
+        url.count("@"),
+        int("https" in url),
+        int("login" in url)
     ]
 
     prediction = model.predict([features])[0]
+    result = "Phishing" if prediction == 1 else "Legitimate"
+
     return jsonify({
         "url": url,
-        "result": "Phishing" if prediction == 1 else "Legitimate"
+        "result": result
     })
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
